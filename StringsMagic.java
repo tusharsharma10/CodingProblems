@@ -373,6 +373,8 @@ public class StringsMagic {
         String s1 = "geeksforgeeks";
         String s2 = "eeksg";
 
+        
+
         System.out.println(hasPatternAnagram(s1, s2));
         // System.out.println(searchPattern(s1,s2));
         // System.out.println(leftMostNonRepeatingChar(s1));

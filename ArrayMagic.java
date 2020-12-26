@@ -408,6 +408,8 @@ public static  void printIntArray(int arr[]) {
         int l[] = { 1, 2, 3 };
         int r[] = { 3, 5, 7 };
         System.out.println(rangePrefixSum(l, r));
+        
+        
 
         // int arr[] = {2,8,3,9,6,5,4};
         // System.out.println(prefixSum(arr,0,2));
