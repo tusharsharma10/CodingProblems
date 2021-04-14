@@ -9,8 +9,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -1135,10 +1137,8 @@ public class Solution {
         return (int) count % mod;
     }
 
-
     /**
-     * Accepted TLE:
-     * Use Prefix technique.
+     * Accepted TLE: Use Prefix technique.
      * https://www.geeksforgeeks.org/substrings-starting-vowel-ending-consonants-vice-versa/
      */
 
@@ -1146,24 +1146,25 @@ public class Solution {
 
         int n = A.length();
 
-        int mod = (int)Math.pow(10, 9) + 7;
+        int mod = (int) Math.pow(10, 9) + 7;
 
         String vowel = "[aeiuo]";
         String consonant = "[^aeiuo]";
         int count = 0;
 
-        for(int i  =0;i<n;i++){
+        for (int i = 0; i < n; i++) {
 
-            for(int j = i+2;j<n+1;j++){
+            for (int j = i + 2; j < n + 1; j++) {
 
                 String sub = A.substring(i, j);
 
-                if(String.valueOf(sub.charAt(0)).matches(vowel) &&  String.valueOf(sub.charAt(j-i-1)).matches(consonant))
+                if (String.valueOf(sub.charAt(0)).matches(vowel)
+                        && String.valueOf(sub.charAt(j - i - 1)).matches(consonant))
                     count++;
 
-                else 
-                    if(String.valueOf(sub.charAt(0)).matches(consonant) &&  String.valueOf(sub.charAt(j-i-1)).matches(vowel))
-                        count++;
+                else if (String.valueOf(sub.charAt(0)).matches(consonant)
+                        && String.valueOf(sub.charAt(j - i - 1)).matches(vowel))
+                    count++;
 
             }
         }
@@ -1171,14 +1172,587 @@ public class Solution {
         return count % mod;
     }
 
+    /**
+     * https://www.interviewbit.com/problems/repeating-subsequence/ Find whether
+     * repeating subsequence exists or not.
+     */
+
+    public static int anytwo(String A) {
+
+        int n = A.length() + 1;
+
+        int dp[][] = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+
+            dp[i][0] = 0;
+            dp[0][i] = 0;
+        }
+
+        for (int i = 1; i < n; i++) {
+
+            for (int j = 1; j < n; j++) {
+
+                if (A.charAt(i - 1) == A.charAt(j - 1) && i != j)
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+
+                else {
+
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        int ans = dp[n - 1][n - 1];
+
+        if (ans < 2)
+            return 0;
+
+        else
+            return 1;
+
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/0-1-knapsack/
+     * 
+     * @param args
+     */
+
+    public static int knapsack(List<Integer> values, List<Integer> wts, int C) {
+
+        // no. of items
+        int n = values.size();
+
+        int dp[][] = new int[n + 1][C + 1];
+
+        for (int i = 0; i <= n; i++) {
+
+            dp[i][0] = 0;
+        }
+
+        for (int i = 0; i <= C; i++) {
+
+            dp[0][i] = 0;
+
+        }
+
+        for (int i = 1; i <= n; i++) {
+
+            for (int j = 1; j <= C; j++) {
+
+                if (j < wts.get(i - 1))
+                    dp[i][j] = dp[i - 1][j];
+
+                else {
+
+                    dp[i][j] = Math.max(values.get(i - 1) + dp[i - 1][j - wts.get(i - 1)], dp[i - 1][j]);
+                }
+            }
+        }
+
+        return dp[n][C];
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/two-out-of-three/
+     * 
+     * @param args
+     */
+
+    public static ArrayList<Integer> twoOutOf3(List<Integer> A, List<Integer> B, List<Integer> C) {
+
+        Set<Integer> ans = new HashSet<>();
+
+        Set<Integer> setA = new HashSet<>();
+        Set<Integer> setB = new HashSet<>();
+        Set<Integer> setC = new HashSet<>();
+
+        for (int x : A) {
+            setA.add(x);
+        }
+
+        for (int x : B) {
+            setB.add(x);
+        }
+
+        for (int x : C) {
+            setC.add(x);
+        }
+
+        for (int i = 0; i < A.size(); i++) {
+
+            int num = A.get(i);
+
+            if (
+
+            (setA.contains(num) && setB.contains(num)) || (setA.contains(num) && setC.contains(num))
+                    || (setC.contains(num) && setB.contains(num))
+
+            )
+                ans.add(num);
+        }
+
+        for (int i = 0; i < B.size(); i++) {
+
+            int num = B.get(i);
+
+            if (
+
+            (setA.contains(num) && setB.contains(num)) || (setA.contains(num) && setC.contains(num))
+                    || (setC.contains(num) && setB.contains(num))
+
+            )
+                ans.add(num);
+        }
+
+        ArrayList<Integer> res = new ArrayList<>();
+
+        for (int x : ans) {
+
+            res.add(x);
+        }
+
+        Collections.sort(res);
+
+        return res;
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/an-increment-problem/
+     * 
+     * @param args
+     */
+
+    public static List<Integer> numberStream(List<Integer> A) {
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < A.size(); i++) {
+
+            int num = A.get(i);
+
+            if (!map.containsKey(num))
+                map.put(num, i);
+
+            else {
+
+                int index = map.get(num);
+                A.set(index, num + 1);
+                map.put(num + 1, index);
+                map.put(num, i);
+            }
+
+        }
+
+        return A;
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/distinct-subsequences/ Q: How many
+     * subsequences of A matches with B
+     * 
+     * @param args
+     */
+
+    public static int numDistinct(String A, String B) {
+
+        int cols = A.length();
+        int rows = B.length();
+
+        int dp[][] = new int[rows][cols];
+
+        if (A.charAt(0) == B.charAt(0))
+            dp[0][0] = 1;
+
+        for (int i = 1; i < rows; i++) {
+            dp[i][0] = 0;
+        }
+
+        for (int i = 1; i < cols; i++) {
+
+            char b = B.charAt(0);
+            char a = A.charAt(i);
+
+            if (b == a)
+                dp[0][i] = 1 + dp[0][i - 1];
+
+            else
+                dp[0][i] = dp[0][i - 1];
+        }
+
+        for (int i = 1; i < rows; i++) {
+
+            for (int j = 1; j < cols; j++) {
+
+                if (B.charAt(i) == A.charAt(j)) {
+                    dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1];
+                }
+
+                else
+                    dp[i][j] = dp[i][j - 1];
+            }
+        }
+
+        return dp[rows - 1][cols - 1];
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/pascal-triangle/
+     * 
+     * @param args
+     */
+
+    public static ArrayList<ArrayList<Integer>> pascalTriangle(int N) {
+
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+
+        if (N < 1)
+            return ans;
+
+        ArrayList<Integer> one = new ArrayList<>();
+        one.add(1);
+        ans.add(one);
+
+        if (N == 1)
+            return ans;
+
+        ArrayList<Integer> two = new ArrayList<>();
+        two.add(1);
+        two.add(1);
+        ans.add(two);
+
+        if (N == 2)
+            return ans;
+
+        for (int i = 2; i < N; i++) {
+
+            ArrayList<Integer> temp = new ArrayList<>();
+            temp.add(1);
+
+            for (int j = 1; j < i; j++) {
+
+                int num = ans.get(i - 1).get(j - 1) + ans.get(i - 1).get(j);
+                temp.add(num);
+            }
+
+            temp.add(1);
+            ans.add(temp);
+        }
+
+        return ans;
+
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/first-missing-integer/
+     */
+
+    public static int firstMissingPositive(List<Integer> A) {
+
+        int n = A.size();
+
+        // remove negative numbers
+
+        for (int i = 0; i < n;) {
+
+            if (A.get(i) <= 0) {
+
+                A.remove(i);
+                n--;
+
+            }
+
+            else
+                i++;
+        }
+
+        // if number is present then make the number at that index negative.
+        for (int i = 0; i < n; i++) {
+
+            // current number
+            int x = Math.abs(A.get(i));
+
+            // make the index of current_number as negative
+            if (x - 1 < n && A.get(x - 1) > 0)
+                A.set(x - 1, -A.get(x - 1));
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (A.get(i) > 0)
+                return i + 1;
+        }
+
+        return n + 1;
+
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/anagrams/
+     * 
+     * @param args
+     */
+
+    private static boolean isAnagram(String a, String b) {
+
+        char[] utf = new char[256];
+
+        for (int i = 0; i < a.length(); i++) {
+
+            utf[a.charAt(i)]++;
+        }
+
+        for (int i = 0; i < a.length(); i++) {
+
+            utf[a.charAt(i)]--;
+        }
+
+        for (int i = 0; i < 256; i++) {
+
+            if (utf[i] != 0)
+                return false;
+        }
+
+        return true;
+
+    }
+
+    public static ArrayList<ArrayList<Integer>> anagrams(List<String> A) {
+
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+
+        for (int i = 0; i < A.size(); i++) {
+
+            String s = A.get(i);
+            char c[] = s.toCharArray();
+            Arrays.sort(c);
+
+            StringBuilder b = new StringBuilder();
+
+            for (char x : c) {
+
+                b.append(x);
+            }
+
+            A.set(i, b.toString());
+
+        }
+
+        HashMap<String, ArrayList<Integer>> map = new HashMap<>();
+
+        for (int i = 0; i < A.size(); i++) {
+
+            String s = A.get(i);
+
+            if (!map.containsKey(s)) {
+
+                ArrayList<Integer> temp = new ArrayList<>();
+                temp.add(i + 1);
+                map.put(s, temp);
+            }
+
+            else {
+
+                ArrayList<Integer> temp = map.get(s);
+                temp.add(i + 1);
+                map.put(s, temp);
+
+            }
+
+        }
+
+        for (ArrayList<Integer> l : map.values()) {
+
+            ans.add(l);
+
+        }
+
+        return ans;
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/remove-consecutive-characters/
+     * 
+     * @param args
+     */
+
+    public static String remConsecutive(String A, int B) {
+
+        int count = 1;
+
+        StringBuilder b = new StringBuilder(A);
+
+        for (int i = 1; i <= b.length(); i++) {
+
+            if (count == B) {
+
+                for (int j = 1; j <= B; j++) {
+
+                    b.deleteCharAt(i - j);
+
+                }
+
+                count = 1;
+                i = i - B;
+                continue;
+            }
+
+            if (i >= b.length())
+                break;
+
+            if (b.charAt(i - 1) == b.charAt(i)) {
+                count++;
+
+            }
+
+            else {
+                count = 1;
+
+            }
+
+        }
+
+        return b.toString();
+
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/longest-common-prefix/
+     * 
+     * @param args
+     */
+
+    public static String longestCommonPrefix(List<String> A) {
+
+        if (A.size() == 1)
+            return A.get(0);
+
+        StringBuilder b = new StringBuilder();
+
+        String s = A.get(0);
+
+        for (int j = 0; j < s.length(); j++) {
+
+            for (int i = 1; i < A.size(); i++) {
+
+                if (A.get(i).length() <= j)
+                    return b.toString();
+
+                if (s.charAt(j) != A.get(i).charAt(j))
+                    return b.toString();
+
+            }
+
+            b.append(s.charAt(j));
+        }
+
+        return b.toString();
+
+    }
+
+    /**
+     * https://www.interviewbit.com/problems/count-and-say/
+     */
+
+    
+    static String countnndSay(int n) 
+    { 
+    
+    
+    if (n == 1)     return "1"; 
+    if (n == 2)     return "11"; 
+  
+    String str = "11";  
+   
+   
+    for (int i = 3; i <= n; i++) { 
+        
+        str += '$'; 
+        int len = str.length(); 
+  
+        int cnt = 1; // Initialize count  
+                     // of matching chars 
+        String tmp = ""; // Initialize i'th  
+                         // term in series 
+        char []arr = str.toCharArray(); 
+          
+        // Process previous term 
+        // to find the next term 
+        for (int j = 1; j < len; j++) 
+        { 
+            // If current character 
+            // does't match 
+            if (arr[j] != arr[j - 1]) 
+            { 
+                // Append count of  
+                // str[j-1] to temp 
+                tmp += cnt + 0; 
+  
+                // Append str[j-1] 
+                tmp += arr[j - 1]; 
+  
+                // Reset count 
+                cnt = 1; 
+            } 
+  
+            // If matches, then increment  
+            // count of matching characters 
+            else cnt++; 
+        } 
+  
+        // Update str 
+        str = tmp; 
+    } 
+  
+    return str; 
+    } 
+
+    
+    
+
+
 
     public static void main(String[] args) {
 
-        List<Integer> A = Arrays.asList(5, 1, 4, 4);
+        // Integer arr[] = { 1, -1, -21, 3, -10, 4 };
 
-        String a = "inttnikjmjbemrberk";
+        // List<Integer> a = Common.arrToList(arr);
 
-        System.out.println(vowel2(a));
+        String a = "abcddcbsa";
+
+        // System.out.println(remConsecutive(a, 2));
+
+        String str[] = { "aaaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
+        List<String> l = Common.arrToList(str);
+
+        System.out.println(longestCommonPrefix(l));
+
+        // System.out.println(anagrams(l));
+
+        // String s1 = "rabbbit";
+        // String s2 = "rabbit";
+
+        // System.out.println(firstMissingPositive(a));
+
+        // System.out.println(pascalTriangle(5));
+
+        // System.out.println(numDistinct(a, b));
+
+        // System.out.println(numberStream(a));
+
+        // List<Integer> wts = Arrays.asList(10, 20, 30);
+
+        // System.out.println(knapsack(values, wts, 50));
+
+        // System.out.println(vowel2(a));
 
         // System.out.println(perfectPeak(A));
 
@@ -1191,10 +1765,12 @@ public class Solution {
         // System.out.println(books(A, 2));
 
         // List<List<Integer>> list = new ArrayList<>();
-        // List<Integer> a = Arrays.asList(1, 3, 5);
-        // List<Integer> b = Arrays.asList(2, 6, 9);
-        // List<Integer> c = Arrays.asList(3, 6, 9);
+        // List<Integer> a = Arrays.asList(1, 1, 2);
+        // List<Integer> b = Arrays.asList(2, 3);
+        // List<Integer> c = Arrays.asList(3);
         // List<Integer> d = Arrays.asList(13,14,15,16);
+
+        // System.out.println(twoOutOf3(a, b, c));
 
         // list.add(a);
         // list.add(b);

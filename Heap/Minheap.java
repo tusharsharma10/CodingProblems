@@ -38,7 +38,7 @@ public class Minheap {
 
         int posn = size - 1;
 
-        while (val > arr[this.getParent(posn)] && posn > 0) {
+        while (val < arr[this.getParent(posn)] && posn > 0) {
 
             swap(arr, val, this.getParent(posn));
             posn = this.getParent(posn);
@@ -95,6 +95,11 @@ public class Minheap {
 
     }
 
+    /**
+     * Decreasing the value of a present key
+     * @param value
+     * @param index
+     */
     public void decreaseKey(int value, int index) {
 
         arr[index] = value;
@@ -119,6 +124,8 @@ public class Minheap {
 
     /**
      * Given a array, we need to convert that array into a MinHeap.
+     * Chose bottom right most node which is non leaf i.e. last parent.
+     * And then keep calling minHeapify.
      * O(N)
      */
     public void buildHeap() {
